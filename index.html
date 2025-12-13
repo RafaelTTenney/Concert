@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenney Family Christmas Concert</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // *** 1. SUPABASE CONFIGURATION - REPLACE THESE WITH YOUR KEYS ***
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        // Initialize Supabase Client
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Simple client-side seat tracking (in a real app, you'd check the DB on load)
+        // For a family event, this is a reasonable starting point.
+        const TOTAL_SEATS = 30; // Define your total number of available seats
+        let currentReservations = 0; 
+
+        // --- NAVIGATION LOGIC ---
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+        }
+
+        // --- RESERVATION LOGIC ---
+        async function checkAvailability() {
+            const { count, error } = await supabase
+                .from('reservations')
+                .select('*', { count: 'exact', head: true });
+
+            if (error) {
+                console.error('Error fetching count:', error);
+                return 0;
+            }
+            return count;
+        }
+
+        async function updateSeatsDisplay() {
+            currentReservations = await checkAvailability();
+            const seatsLeft = TOTAL_SEATS - currentReservations;
+            const seatsDisplay = document.getElementById('seats-left');
+            const reservationButton = document.getElementById('reserve-button');
+
+            seatsDisplay.textContent = `${seatsLeft} seats remaining!`;
+
+            if (seatsLeft <= 0) {
+                seatsDisplay.textContent = 'Reservations Full!';
+                reservationButton.disabled = true;
+                reservationButton.textContent = 'No Seats Available';
+            } else {
+                reservationButton.disabled = false;
+                reservationButton.textContent = 'Reserve My Seat';
+            }
+        }
+
+        async function reserveSeat() {
+            const name = document.getElementById('name-input').value.trim();
+            const guests = parseInt(document.getElementById('guests-input').value, 10);
+
+            if (!name) {
+                alert('Please enter your name.');
+                return;
+            }
+            if (guests < 1 || isNaN(guests)) {
+                alert('Please enter a valid number of guests (1 or more).');
+                return;
+            }
+            
+            // Check if reservation is possible
+            const seatsLeft = TOTAL_SEATS - currentReservations;
+            if (guests > seatsLeft) {
+                alert(`Sorry, only ${seatsLeft} seats are left. Please reduce your guest count.`);
+                return;
+            }
+
+            document.getElementById('reserve-button').disabled = true;
+            document.getElementById('reserve-button').textContent = 'Reserving...';
+
+            const { data, error } = await supabase
+                .from('reservations')
+                .insert([
+                    { name: name, guests: guests }
+                ]);
+
+            if (error) {
+                console.error('Reservation Error:', error);
+                alert('An error occurred during reservation. Please try again.');
+            } else {
+                alert(`Success! Reservation made for ${name} and ${guests} guest(s).`);
+                document.getElementById('reservation-form').reset(); // Clear the form
+                // Re-check and update display
+                await updateSeatsDisplay();
+            }
+
+            document.getElementById('reserve-button').disabled = false;
+            document.getElementById('reserve-button').textContent = 'Reserve My Seat';
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            showPage('welcome-page');
+            // Only update seat display on the reservation page load
+            if (document.getElementById('reserve-page').style.display === 'block') {
+                updateSeatsDisplay();
+            }
+        };
+    </script>
+</head>
+<body>
+
+    <header>
+        <h1>Tenney Family Christmas Concert</h1>
+        <nav>
+            <a href="#" onclick="showPage('welcome-page')">Welcome</a>
+            <a href="#" onclick="showPage('program-page')">Program</a>
+            <a href="#" onclick="showPage('reserve-page'); updateSeatsDisplay();">Reserve a Seat</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="welcome-page" class="page">
+            <h2>Welcome Home for the Holidays!</h2>
+            <p>We are so excited to gather everyone for our annual Tenney Family Christmas Concert. Get ready for an evening of music, laughter, and festive cheer!</p>
+            <p class="highlight">Date: Saturday, December 24th</p>
+            <p class="highlight">Time: 7:00 PM</p>
+            <p class="highlight">Location: Tenney Family Home (Address will be sent via private message)</p>
+            <button onclick="showPage('reserve-page'); updateSeatsDisplay();">Reserve Your Seats Now</button>
+        </section>
+
+        <section id="program-page" class="page" style="display:none;">
+            <h2>This Year's Program</h2>
+            <div class="program-list">
+                <p><strong>Part I: Traditional Favorites</strong></p>
+                <ul>
+                    <li>The Tenney Trio - "O Holy Night"</li>
+                    <li>Grandma's Solo - "Silent Night"</li>
+                    <li>The Kids' Chorus - "Jingle Bells"</li>
+                </ul>
+                <p><strong>Part II: Modern Holiday Spirit</strong></p>
+                <ul>
+                    <li>Acoustic Set - "Last Christmas"</li>
+                    <li>Family Sing-Along - "The Twelve Days of Christmas" (with props!)</li>
+                    <li>The Finale - "Joy to the World"</li>
+                </ul>
+                <p class="note">A dessert and hot cocoa reception will follow the concert.</p>
+            </div>
+        </section>
+
+        <section id="reserve-page" class="page" style="display:none;">
+            <h2>Reserve Your Seats</h2>
+            <p>Please let us know how many will be joining us so we can prepare the seating arrangements.</p>
+
+            <div class="availability-status">
+                <strong id="seats-left">Checking availability...</strong>
+            </div>
+
+            <form id="reservation-form" onsubmit="event.preventDefault(); reserveSeat();">
+                <div class="form-group">
+                    <label for="name-input">Your Full Name:</label>
+                    <input type="text" id="name-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="guests-input">Number of Guests (including yourself):</label>
+                    <input type="number" id="guests-input" value="1" min="1" required>
+                </div>
+                <button type="submit" id="reserve-button">Reserve My Seat</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; The Tenney Family Christmas 2025</p>
+    </footer>
+
+</body>
+</html>
