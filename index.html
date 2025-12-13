@@ -7,18 +7,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script>
-        // *** SUPABASE CONFIGURATION - INTEGRATED WITH YOUR KEYS ***
-        const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsInVzZXItaWQiOiJjZmFmNTJjZS1kNmNmLTQyNjQtOTU2OS1mMDYzMDU4YTBmY2UiLCJleHAiOjIwODExNjI1Mjh9.H5N-I2Qj9F0L5D7Q-W9F6m4QfX0d8T-O9C2G8I5nL-g';
-        
-        // Initialize Supabase Client
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        const TOTAL_SEATS = 30; 
-        let currentReservations = 0; 
-    </script>
-
     <style>
         /* CSS is unchanged */
         body {
@@ -304,10 +292,21 @@
     </footer>
 
     <script>
+        // *** 1. SUPABASE CONFIGURATION AND GLOBAL CONSTANTS ***
+        // These declarations run immediately after the SDK above.
+        const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsImV4cCI6MjA4MTE2MjUyOH0.e-lajbS1xmNr1hnMj8nkdzzkeuef5HCRiUVsRJEvrxI';
+        
+        // Initialize Supabase Client (This is the line causing the error if run too soon)
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        const TOTAL_SEATS = 30; 
+        let currentReservations = 0; 
+        
+        // --- 2. JAVASCRIPT FUNCTIONS ---
+
         // --- NAVIGATION LOGIC ---
         function showPage(pageId) {
-            // These functions can now safely access 'supabase', 'TOTAL_SEATS', etc., 
-            // because those variables were defined in the dedicated script block above.
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => {
                 page.style.display = 'none';
@@ -319,6 +318,7 @@
 
         // --- RESERVATION LOGIC ---
         async function checkAvailability() {
+            // This function can now safely access 'supabase' 
             const { data, error } = await supabase
                 .from('reservations')
                 .select('guests');
@@ -407,7 +407,7 @@
             }
         }
 
-        // --- EVENT ATTACHMENT (The final link between HTML IDs and JS functions) ---
+        // --- 3. EVENT ATTACHMENT ---
         document.addEventListener('DOMContentLoaded', () => {
             // Initial Page Load
             showPage('welcome-page');
@@ -419,7 +419,6 @@
             // Reservation Handlers (Handles both nav bar and welcome button)
             const reserveNavHandler = () => {
                 showPage('reserve-page');
-                // Crucially, call the function only when the page is displayed
                 updateSeatsDisplay(); 
             };
             
