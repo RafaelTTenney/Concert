@@ -4,19 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tenney Family Christmas Concert</title>
-    <link rel="stylesheet" href="style.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* General Setup */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #d4d4d4, #f4f4f4); /* Light gray gradient */
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Lights Effect across the top */
+        .header-lights {
+            position: relative;
+            height: 30px;
+            background-color: #A50021; /* Deep Red */
+        }
+        .header-lights::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                /* Pattern for the string of lights */
+                radial-gradient(circle at 10% 50%, gold 4px, transparent 5px),
+                radial-gradient(circle at 25% 50%, green 4px, transparent 5px),
+                radial-gradient(circle at 40% 50%, red 4px, transparent 5px),
+                radial-gradient(circle at 55% 50%, gold 4px, transparent 5px),
+                radial-gradient(circle at 70% 50%, green 4px, transparent 5px),
+                radial-gradient(circle at 85% 50%, red 4px, transparent 5px);
+            background-size: 10% 100%;
+            background-repeat: repeat-x;
+            opacity: 0.8;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Header and Navigation (Festive Colors) */
+        header {
+            background-color: #A50021; /* Deep Red */
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            background-color: #008000; /* Forest Green */
+        }
+
+        /* Page Styling */
+        .page {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .page h2 {
+            color: #006400; /* Dark Green */
+            margin-bottom: 20px;
+            font-size: 2.2em;
+            border-bottom: 2px solid #A50021;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* Welcome Page Specifics */
+        .highlight {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #A50021;
+            margin: 15px 0;
+            background-color: #f9f9f9;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        /* Program Page Specifics */
+        .program-list {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .program-list p {
+            font-size: 1.1em;
+            margin-top: 20px;
+            color: #A50021;
+        }
+
+        .program-list ul {
+            list-style-type: '🎶 '; /* Custom bullet point */
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .program-list li {
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .note {
+            font-style: italic;
+            color: #006400;
+            margin-top: 20px;
+        }
+
+        /* Reservation Form */
+        #reservation-form {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fcfcfc;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #006400;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #A50021;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        /* Buttons */
+        button {
+            background-color: #008000; /* Forest Green */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s, opacity 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #006400;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Availability Status */
+        .availability-status {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #A50021;
+            font-weight: bold;
+            padding: 10px;
+            border: 2px dashed #A50021;
+            display: inline-block;
+            border-radius: 5px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #333;
+            color: white;
+            margin-top: 30px;
+        }
+    </style>
+
     <script>
-        // *** 1. SUPABASE CONFIGURATION - REPLACE THESE WITH YOUR KEYS ***
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // *** 1. SUPABASE CONFIGURATION - INTEGRATED WITH YOUR KEYS ***
+        const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsImV4cCI6MjA4MTE2MjUyOH0.e-lajbS1xmNr1hnMj8nkdzzkeuef5HCRiUVsRJEvrxI';
 
         // Initialize Supabase Client
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Simple client-side seat tracking (in a real app, you'd check the DB on load)
-        // For a family event, this is a reasonable starting point.
-        const TOTAL_SEATS = 30; // Define your total number of available seats
+        // Define your total number of available seats
+        const TOTAL_SEATS = 30; 
         let currentReservations = 0; 
 
         // --- NAVIGATION LOGIC ---
@@ -30,13 +241,15 @@
 
         // --- RESERVATION LOGIC ---
         async function checkAvailability() {
+            // Use the count option in the select query to get the total reservations
             const { count, error } = await supabase
                 .from('reservations')
                 .select('*', { count: 'exact', head: true });
 
             if (error) {
                 console.error('Error fetching count:', error);
-                return 0;
+                // Return total seats to prevent reservations if the check fails (safe default)
+                return TOTAL_SEATS; 
             }
             return count;
         }
@@ -50,7 +263,7 @@
             seatsDisplay.textContent = `${seatsLeft} seats remaining!`;
 
             if (seatsLeft <= 0) {
-                seatsDisplay.textContent = 'Reservations Full!';
+                seatsDisplay.textContent = 'Reservations Full! We look forward to seeing you!';
                 reservationButton.disabled = true;
                 reservationButton.textContent = 'No Seats Available';
             } else {
@@ -72,16 +285,16 @@
                 return;
             }
             
-            // Check if reservation is possible
             const seatsLeft = TOTAL_SEATS - currentReservations;
             if (guests > seatsLeft) {
-                alert(`Sorry, only ${seatsLeft} seats are left. Please reduce your guest count.`);
+                alert(`Sorry, only ${seatsLeft} seats are currently left. Please reduce your guest count.`);
                 return;
             }
 
             document.getElementById('reserve-button').disabled = true;
             document.getElementById('reserve-button').textContent = 'Reserving...';
 
+            // Insert data into Supabase
             const { data, error } = await supabase
                 .from('reservations')
                 .insert([
@@ -90,12 +303,11 @@
 
             if (error) {
                 console.error('Reservation Error:', error);
-                alert('An error occurred during reservation. Please try again.');
+                alert('An error occurred during reservation. Please try again. (Check console for details)');
             } else {
-                alert(`Success! Reservation made for ${name} and ${guests} guest(s).`);
+                alert(`Success! Reservation made for ${name} and ${guests} guest(s). We look forward to seeing you!`);
                 document.getElementById('reservation-form').reset(); // Clear the form
-                // Re-check and update display
-                await updateSeatsDisplay();
+                await updateSeatsDisplay(); // Refresh the seat count
             }
 
             document.getElementById('reserve-button').disabled = false;
@@ -104,15 +316,17 @@
 
         // --- INITIALIZATION ---
         window.onload = () => {
+            // Set the initial page
             showPage('welcome-page');
-            // Only update seat display on the reservation page load
-            if (document.getElementById('reserve-page').style.display === 'block') {
-                updateSeatsDisplay();
-            }
+            
+            // This is a simple trick: when the reserve link is clicked, the nav function runs the updateSeatsDisplay. 
+            // We don't need to run it on general page load unless we want the count visible elsewhere.
         };
     </script>
 </head>
 <body>
+
+    <div class="header-lights"></div>
 
     <header>
         <h1>Tenney Family Christmas Concert</h1>
@@ -148,13 +362,13 @@
                     <li>Family Sing-Along - "The Twelve Days of Christmas" (with props!)</li>
                     <li>The Finale - "Joy to the World"</li>
                 </ul>
-                <p class="note">A dessert and hot cocoa reception will follow the concert.</p>
+                <p class="note">A dessert and hot cocoa reception will follow the concert. Please dress warmly!</p>
             </div>
         </section>
 
         <section id="reserve-page" class="page" style="display:none;">
             <h2>Reserve Your Seats</h2>
-            <p>Please let us know how many will be joining us so we can prepare the seating arrangements.</p>
+            <p>Please let us know how many will be joining us so we can prepare the seating arrangements. We have a total of **30** seats available.</p>
 
             <div class="availability-status">
                 <strong id="seats-left">Checking availability...</strong>
@@ -175,7 +389,7 @@
     </main>
 
     <footer>
-        <p>&copy; The Tenney Family Christmas 2025</p>
+        <p>Wishing you a Merry Christmas! &copy; The Tenney Family</p>
     </footer>
 
 </body>
