@@ -10,7 +10,7 @@
     <script>
         // *** SUPABASE CONFIGURATION - INTEGRATED WITH YOUR KEYS ***
         const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsImV4cCI6MjA4MTE2MjUyOH0.e-lajbS1xmNr1hnMj8nkdzzkeuef5HCRiUVsRJEvrxI';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsInVzZXItaWQiOiJjZmFmNTJjZS1kNmNmLTQyNjQtOTU2OS1mMDYzMDU4YTBmY2UiLCJleHAiOjIwODExNjI1Mjh9.H5N-I2Qj9F0L5D7Q-W9F6m4QfX0d8T-O9C2G8I5nL-g';
         
         // Initialize Supabase Client
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -20,7 +20,7 @@
     </script>
 
     <style>
-        /* CSS is unchanged from the previous, error-free version */
+        /* CSS is unchanged */
         body {
             font-family: 'Arial', sans-serif;
             color: #333;
@@ -306,6 +306,8 @@
     <script>
         // --- NAVIGATION LOGIC ---
         function showPage(pageId) {
+            // These functions can now safely access 'supabase', 'TOTAL_SEATS', etc., 
+            // because those variables were defined in the dedicated script block above.
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => {
                 page.style.display = 'none';
@@ -317,7 +319,6 @@
 
         // --- RESERVATION LOGIC ---
         async function checkAvailability() {
-            // Can now safely access 'supabase' and 'TOTAL_SEATS'
             const { data, error } = await supabase
                 .from('reservations')
                 .select('guests');
@@ -355,10 +356,8 @@
             const confirmationMessage = document.getElementById('confirmation-message');
             confirmationMessage.style.display = 'none';
 
-            const nameInput = document.getElementById('name-input');
-            const guestsInput = document.getElementById('guests-input');
-            const name = nameInput.value.trim();
-            const guests = parseInt(guestsInput.value, 10);
+            const name = document.getElementById('name-input').value.trim();
+            const guests = parseInt(document.getElementById('guests-input').value, 10);
 
             if (!name) {
                 alert('Please enter your name.');
@@ -389,7 +388,7 @@
 
             if (error) {
                 console.error('Reservation Error:', error);
-                alert('An error occurred during reservation. Please try again. Check console for details (RLS/network).');
+                alert('An error occurred during reservation. Please try again. (Check console for RLS/network issues)');
                 reserveButton.disabled = false;
                 reserveButton.textContent = 'Reserve My Seat';
             } else {
@@ -408,25 +407,26 @@
             }
         }
 
-        // --- EVENT ATTACHMENT ---
+        // --- EVENT ATTACHMENT (The final link between HTML IDs and JS functions) ---
         document.addEventListener('DOMContentLoaded', () => {
             // Initial Page Load
             showPage('welcome-page');
             
-            // Navigation Links
+            // Navigation Handlers
             document.getElementById('nav-welcome').addEventListener('click', () => showPage('welcome-page'));
             document.getElementById('nav-program').addEventListener('click', () => showPage('program-page'));
             
-            // Reservation Navigation (Nav bar and Welcome button)
+            // Reservation Handlers (Handles both nav bar and welcome button)
             const reserveNavHandler = () => {
                 showPage('reserve-page');
-                updateSeatsDisplay();
+                // Crucially, call the function only when the page is displayed
+                updateSeatsDisplay(); 
             };
             
             document.getElementById('nav-reserve').addEventListener('click', reserveNavHandler);
             document.getElementById('btn-reserve-welcome').addEventListener('click', reserveNavHandler);
 
-            // Form Submission
+            // Form Submission Handler
             document.getElementById('reservation-form').addEventListener('submit', reserveSeat);
         });
     </script>
