@@ -15,12 +15,9 @@
             margin: 0;
             padding: 0;
             line-height: 1.6;
-            
-            /* Enhanced Christmas Background */
-            background: 
-                url('https://i.imgur.com/k9bT6O6.png') no-repeat bottom right fixed, /* Example image of stylized corner christmas tree - Replace this with your own local image if desired */
-                linear-gradient(to top, #e6f7ff 10%, #d4d4d4 90%); 
-            background-size: 300px, cover; /* Size of the image and cover for the gradient */
+            /* Simple Festive Background (Fixes Image Error) */
+            background: linear-gradient(to bottom right, #f7f7f7, #d4d4d4); 
+            min-height: 100vh;
         }
 
         /* Lights Effect across the top */
@@ -39,21 +36,21 @@
             background: 
                 /* Pattern for the string of lights */
                 radial-gradient(circle at 10% 50%, gold 4px, transparent 5px),
-                radial-gradient(circle at 25% 50%, green 4px, transparent 5px),
+                radial-gradient(circle at 25% 50%, #008000 4px, transparent 5px),
                 radial-gradient(circle at 40% 50%, red 4px, transparent 5px),
                 radial-gradient(circle at 55% 50%, gold 4px, transparent 5px),
-                radial-gradient(circle at 70% 50%, green 4px, transparent 5px),
+                radial-gradient(circle at 70% 50%, #008000 4px, transparent 5px),
                 radial-gradient(circle at 85% 50%, red 4px, transparent 5px);
             background-size: 10% 100%;
             background-repeat: repeat-x;
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
         main {
             max-width: 900px;
             margin: 20px auto;
             padding: 20px 40px;
-            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white for background visibility */
+            background-color: rgba(255, 255, 255, 0.98); 
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
@@ -70,7 +67,7 @@
             margin: 0;
             font-size: 2.8em;
             letter-spacing: 2px;
-            text-shadow: 2px 2px 4px #000;
+            text-shadow: 1px 1px 2px #000;
         }
 
         nav {
@@ -88,7 +85,7 @@
         }
 
         nav a:hover {
-            background-color: #008000; /* Forest Green */
+            background-color: #006400; /* Darker Green */
         }
 
         /* Page Styling */
@@ -112,13 +109,41 @@
             font-weight: bold;
             color: #A50021;
             margin: 15px 0;
-            background-color: #fff8e1; /* Light yellow background */
+            background-color: #fff8e1;
             padding: 10px;
             border-radius: 8px;
             border-left: 5px solid gold;
         }
 
-        /* Program Page Specifics (omitted for brevity, assume previous styles apply) */
+        /* Program Page Specifics */
+        .program-list {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .program-list p {
+            font-size: 1.1em;
+            margin-top: 20px;
+            color: #A50021;
+        }
+
+        .program-list ul {
+            list-style-type: '🎶 ';
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .program-list li {
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .note {
+            font-style: italic;
+            color: #006400;
+            margin-top: 20px;
+        }
 
         /* Reservation Form */
         #reservation-form {
@@ -130,30 +155,72 @@
             background-color: #fcfcfc;
         }
         
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
         .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
             color: #006400;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #A50021;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
         }
 
         /* Buttons */
         button {
-            /* styles preserved */
+            background-color: #008000;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s, opacity 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #006400;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         /* Availability Status */
         .availability-status {
-            /* styles preserved */
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #A50021;
+            font-weight: bold;
+            padding: 10px;
+            border: 2px dashed #A50021;
+            display: inline-block;
+            border-radius: 5px;
         }
 
         /* Confirmation Message Styling */
         #confirmation-message {
             margin-top: 20px;
             padding: 15px;
-            background-color: #e6ffe6; /* Light green background */
+            background-color: #e6ffe6;
             border: 1px solid #008000;
             border-radius: 5px;
             color: #006400;
             font-weight: bold;
-            display: none; /* Initially hidden */
+            display: none;
         }
 
         /* Footer */
@@ -173,9 +240,9 @@
     <header>
         <h1>Tenney Family Christmas Concert</h1>
         <nav>
-            <a href="#" onclick="showPage('welcome-page')">Welcome</a>
-            <a href="#" onclick="showPage('program-page')">Program</a>
-            <a href="#" onclick="showPage('reserve-page'); updateSeatsDisplay();">Reserve a Seat</a>
+            <a href="#" id="nav-welcome">Welcome</a>
+            <a href="#" id="nav-program">Program</a>
+            <a href="#" id="nav-reserve">Reserve a Seat</a>
         </nav>
     </header>
 
@@ -186,7 +253,7 @@
             <p class="highlight">Date: Saturday, December 24th</p>
             <p class="highlight">Time: 7:00 PM</p>
             <p class="highlight">Location: Tenney Family Home (Address will be sent via private message)</p>
-            <button onclick="showPage('reserve-page'); updateSeatsDisplay();">Reserve Your Seats Now</button>
+            <button id="btn-reserve-welcome">Reserve Your Seats Now</button>
         </section>
 
         <section id="program-page" class="page" style="display:none;">
@@ -216,7 +283,7 @@
                 <strong id="seats-left">Checking availability...</strong>
             </div>
 
-            <form id="reservation-form" onsubmit="event.preventDefault(); reserveSeat();">
+            <form id="reservation-form">
                 <div class="form-group">
                     <label for="name-input">Your Full Name:</label>
                     <input type="text" id="name-input" required>
@@ -238,13 +305,13 @@
 
     <script>
         // *** 1. SUPABASE CONFIGURATION - INTEGRATED WITH YOUR KEYS ***
+        // These variables are safe to declare here after the SDK is loaded
         const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsImV4cCI6MjA4MTE2MjUyOH0.e-lajbS1xmNr1hnMj8nkdzzkeuef5HCRiUVsRJEvrxI';
 
         // Initialize Supabase Client
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Define your total number of available seats
         const TOTAL_SEATS = 30; 
         let currentReservations = 0; 
 
@@ -256,13 +323,11 @@
             });
             document.getElementById(pageId).style.display = 'block';
             
-            // Hide confirmation message when switching pages
             document.getElementById('confirmation-message').style.display = 'none'; 
         }
 
         // --- RESERVATION LOGIC ---
         async function checkAvailability() {
-            // Sum the 'guests' column to get the total number of reserved seats
             const { data, error } = await supabase
                 .from('reservations')
                 .select('guests');
@@ -272,7 +337,6 @@
                 return 0; 
             }
             
-            // Sum all the 'guests' values
             const totalGuestsReserved = data.reduce((sum, row) => sum + row.guests, 0);
             return totalGuestsReserved;
         }
@@ -295,12 +359,17 @@
             }
         }
 
-        async function reserveSeat() {
+        async function reserveSeat(event) {
+            // Ensure this is called first in case of a direct form submit
+            event.preventDefault(); 
+            
             const confirmationMessage = document.getElementById('confirmation-message');
             confirmationMessage.style.display = 'none';
 
-            const name = document.getElementById('name-input').value.trim();
-            const guests = parseInt(document.getElementById('guests-input').value, 10);
+            const nameInput = document.getElementById('name-input');
+            const guestsInput = document.getElementById('guests-input');
+            const name = nameInput.value.trim();
+            const guests = parseInt(guestsInput.value, 10);
 
             if (!name) {
                 alert('Please enter your name.');
@@ -320,22 +389,22 @@
                 return;
             }
 
-            document.getElementById('reserve-button').disabled = true;
-            document.getElementById('reserve-button').textContent = 'Reserving...';
+            const reserveButton = document.getElementById('reserve-button');
+            reserveButton.disabled = true;
+            reserveButton.textContent = 'Reserving...';
 
             // Insert data into Supabase
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('reservations')
                 .insert([
                     { name: name, guests: guests }
-                ])
-                .select();
+                ]);
 
             if (error) {
                 console.error('Reservation Error:', error);
-                alert('An error occurred during reservation. Please try again. (Check console for RLS policy or network issues)');
-                document.getElementById('reserve-button').disabled = false;
-                document.getElementById('reserve-button').textContent = 'Reserve My Seat';
+                alert('An error occurred during reservation. Please try again. Check console for details (RLS/network).');
+                reserveButton.disabled = false;
+                reserveButton.textContent = 'Reserve My Seat';
             } else {
                 // SUCCESS: Show Confirmation Message
                 confirmationMessage.innerHTML = `
@@ -348,21 +417,35 @@
                 document.getElementById('reservation-form').reset(); 
                 await updateSeatsDisplay(); 
                 
-                document.getElementById('reserve-button').disabled = false;
-                document.getElementById('reserve-button').textContent = 'Reserve My Seat';
+                reserveButton.disabled = false;
+                reserveButton.textContent = 'Reserve My Seat';
             }
         }
 
-        // --- INITIALIZATION ---
-        window.onload = () => {
+        // --- CRITICAL INITIALIZATION FIX ---
+        // We attach all handlers after the DOM is fully loaded.
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Initial Page Load
             showPage('welcome-page');
             
-            // Assign the function to the form submit event
-            document.getElementById('reservation-form').onsubmit = function(event) {
-                event.preventDefault();
-                reserveSeat();
-            };
-        };
+            // 2. Attach Event Listeners to Navigation and Buttons
+            document.getElementById('nav-welcome').addEventListener('click', () => showPage('welcome-page'));
+            document.getElementById('nav-program').addEventListener('click', () => showPage('program-page'));
+            
+            document.getElementById('nav-reserve').addEventListener('click', () => {
+                showPage('reserve-page');
+                updateSeatsDisplay();
+            });
+
+            document.getElementById('btn-reserve-welcome').addEventListener('click', () => {
+                showPage('reserve-page');
+                updateSeatsDisplay();
+            });
+
+            // 3. Attach Event Listener to the Form
+            document.getElementById('reservation-form').addEventListener('submit', reserveSeat);
+        });
     </script>
 
 </body>
