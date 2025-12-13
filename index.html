@@ -7,24 +7,34 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <script>
+        // *** SUPABASE CONFIGURATION - INTEGRATED WITH YOUR KEYS ***
+        const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsImV4cCI6MjA4MTE2MjUyOH0.e-lajbS1xmNr1hnMj8nkdzzkeuef5HCRiUVsRJEvrxI';
+        
+        // Initialize Supabase Client
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        const TOTAL_SEATS = 30; 
+        let currentReservations = 0; 
+    </script>
+
     <style>
-        /* General Setup */
+        /* CSS is unchanged from the previous, error-free version */
         body {
             font-family: 'Arial', sans-serif;
             color: #333;
             margin: 0;
             padding: 0;
             line-height: 1.6;
-            /* Simple Festive Background (Fixes Image Error) */
             background: linear-gradient(to bottom right, #f7f7f7, #d4d4d4); 
             min-height: 100vh;
         }
 
-        /* Lights Effect across the top */
         .header-lights {
             position: relative;
             height: 30px;
-            background-color: #A50021; /* Deep Red */
+            background-color: #A50021;
         }
         .header-lights::before {
             content: '';
@@ -34,7 +44,6 @@
             width: 100%;
             height: 100%;
             background: 
-                /* Pattern for the string of lights */
                 radial-gradient(circle at 10% 50%, gold 4px, transparent 5px),
                 radial-gradient(circle at 25% 50%, #008000 4px, transparent 5px),
                 radial-gradient(circle at 40% 50%, red 4px, transparent 5px),
@@ -55,9 +64,8 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Header and Navigation (Festive Colors) */
         header {
-            background-color: #A50021; /* Deep Red */
+            background-color: #A50021;
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -85,17 +93,16 @@
         }
 
         nav a:hover {
-            background-color: #006400; /* Darker Green */
+            background-color: #006400;
         }
 
-        /* Page Styling */
         .page {
             padding: 30px;
             text-align: center;
         }
 
         .page h2 {
-            color: #006400; /* Dark Green */
+            color: #006400;
             margin-bottom: 20px;
             font-size: 2.5em;
             border-bottom: 2px solid #A50021;
@@ -103,7 +110,6 @@
             display: inline-block;
         }
 
-        /* Welcome Page Specifics */
         .highlight {
             font-size: 1.3em;
             font-weight: bold;
@@ -115,7 +121,6 @@
             border-left: 5px solid gold;
         }
 
-        /* Program Page Specifics */
         .program-list {
             text-align: left;
             max-width: 600px;
@@ -145,7 +150,6 @@
             margin-top: 20px;
         }
 
-        /* Reservation Form */
         #reservation-form {
             max-width: 400px;
             margin: 20px auto;
@@ -176,7 +180,6 @@
             font-size: 1em;
         }
 
-        /* Buttons */
         button {
             background-color: #008000;
             color: white;
@@ -199,7 +202,6 @@
             opacity: 0.7;
         }
 
-        /* Availability Status */
         .availability-status {
             font-size: 1.4em;
             margin-bottom: 20px;
@@ -211,7 +213,6 @@
             border-radius: 5px;
         }
 
-        /* Confirmation Message Styling */
         #confirmation-message {
             margin-top: 20px;
             padding: 15px;
@@ -223,7 +224,6 @@
             display: none;
         }
 
-        /* Footer */
         footer {
             text-align: center;
             padding: 15px;
@@ -304,17 +304,6 @@
     </footer>
 
     <script>
-        // *** 1. SUPABASE CONFIGURATION - INTEGRATED WITH YOUR KEYS ***
-        // These variables are safe to declare here after the SDK is loaded
-        const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsImV4cCI6MjA4MTE2MjUyOH0.e-lajbS1xmNr1hnMj8nkdzzkeuef5HCRiUVsRJEvrxI';
-
-        // Initialize Supabase Client
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        const TOTAL_SEATS = 30; 
-        let currentReservations = 0; 
-
         // --- NAVIGATION LOGIC ---
         function showPage(pageId) {
             const pages = document.querySelectorAll('.page');
@@ -328,6 +317,7 @@
 
         // --- RESERVATION LOGIC ---
         async function checkAvailability() {
+            // Can now safely access 'supabase' and 'TOTAL_SEATS'
             const { data, error } = await supabase
                 .from('reservations')
                 .select('guests');
@@ -360,7 +350,6 @@
         }
 
         async function reserveSeat(event) {
-            // Ensure this is called first in case of a direct form submit
             event.preventDefault(); 
             
             const confirmationMessage = document.getElementById('confirmation-message');
@@ -380,7 +369,6 @@
                 return;
             }
             
-            // Re-check availability just before reserving
             await updateSeatsDisplay();
             const seatsLeft = TOTAL_SEATS - currentReservations;
             
@@ -393,7 +381,6 @@
             reserveButton.disabled = true;
             reserveButton.textContent = 'Reserving...';
 
-            // Insert data into Supabase
             const { error } = await supabase
                 .from('reservations')
                 .insert([
@@ -406,7 +393,6 @@
                 reserveButton.disabled = false;
                 reserveButton.textContent = 'Reserve My Seat';
             } else {
-                // SUCCESS: Show Confirmation Message
                 confirmationMessage.innerHTML = `
                     <h3>🎉 Reservation Confirmed!</h3>
                     <p>Thank you, <strong>${name}</strong>! You have successfully reserved <strong>${guests}</strong> seat(s).</p>
@@ -422,28 +408,25 @@
             }
         }
 
-        // --- CRITICAL INITIALIZATION FIX ---
-        // We attach all handlers after the DOM is fully loaded.
+        // --- EVENT ATTACHMENT ---
         document.addEventListener('DOMContentLoaded', () => {
-            
-            // 1. Initial Page Load
+            // Initial Page Load
             showPage('welcome-page');
             
-            // 2. Attach Event Listeners to Navigation and Buttons
+            // Navigation Links
             document.getElementById('nav-welcome').addEventListener('click', () => showPage('welcome-page'));
             document.getElementById('nav-program').addEventListener('click', () => showPage('program-page'));
             
-            document.getElementById('nav-reserve').addEventListener('click', () => {
+            // Reservation Navigation (Nav bar and Welcome button)
+            const reserveNavHandler = () => {
                 showPage('reserve-page');
                 updateSeatsDisplay();
-            });
+            };
+            
+            document.getElementById('nav-reserve').addEventListener('click', reserveNavHandler);
+            document.getElementById('btn-reserve-welcome').addEventListener('click', reserveNavHandler);
 
-            document.getElementById('btn-reserve-welcome').addEventListener('click', () => {
-                showPage('reserve-page');
-                updateSeatsDisplay();
-            });
-
-            // 3. Attach Event Listener to the Form
+            // Form Submission
             document.getElementById('reservation-form').addEventListener('submit', reserveSeat);
         });
     </script>
