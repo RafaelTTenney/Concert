@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tenney Family Christmas Concert</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
 
     <style>
-        /* CSS is unchanged */
+        /* CSS is omitted here for brevity, assume previous styles apply */
+        /* ... All CSS ... */
         body {
             font-family: 'Arial', sans-serif;
             color: #333;
@@ -293,12 +294,11 @@
 
     <script>
         // *** 1. SUPABASE CONFIGURATION AND GLOBAL CONSTANTS ***
-        // These declarations run immediately after the SDK above.
         const SUPABASE_URL = 'https://kzdczrocfvsrbwsccjaa.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt6ZGN6cm9jZnZzcmJ3c2NjamFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1ODY1MjgsImV4cCI6MjA4MTE2MjUyOH0.e-lajbS1xmNr1hnMj8nkdzzkeuef5HCRiUVsRJEvrxI';
         
-        // Initialize Supabase Client (This is the line causing the error if run too soon)
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Fix B: Use a unique variable name (supabaseClient) to avoid confusion with the global 'supabase' from the SDK
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         const TOTAL_SEATS = 30; 
         let currentReservations = 0; 
@@ -318,8 +318,8 @@
 
         // --- RESERVATION LOGIC ---
         async function checkAvailability() {
-            // This function can now safely access 'supabase' 
-            const { data, error } = await supabase
+            // Updated to use the new variable name
+            const { data, error } = await supabaseClient
                 .from('reservations')
                 .select('guests');
 
@@ -380,7 +380,8 @@
             reserveButton.disabled = true;
             reserveButton.textContent = 'Reserving...';
 
-            const { error } = await supabase
+            // Updated to use the new variable name
+            const { error } = await supabaseClient
                 .from('reservations')
                 .insert([
                     { name: name, guests: guests }
